@@ -1,7 +1,17 @@
+# 核心依赖 - 需要严格按顺序安装以避免版本冲突
+# 注意: NumPy 必须 < 2.0 以兼容 opencv-contrib-python 4.9.0.80
+numpy<2
 opencv-contrib-python==4.9.0.80
 PyQt5==5.15.10
 pywin32==306
 keyboard==0.13.5
+# ppocr-onnx 依赖 opencv-python，会导致版本冲突，需要特殊处理（见 Q_README.md）
 ppocr-onnx==0.0.3.9
 matplotlib==3.9.2
 filelock==3.13.1
+# ppocr-onnx 的其他依赖（手动列出以避免自动安装冲突的 opencv-python）
+onnxruntime
+shapely
+pyclipper
+pillow
+requests
