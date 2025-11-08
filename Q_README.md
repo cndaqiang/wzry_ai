@@ -139,7 +139,7 @@ python train.py
 $timer=Start-Job {Start-Sleep 20}; Write-Host "Press any key to continue..."; while(-not [console]::KeyAvailable -and (Get-Job -Id $timer.Id).State -eq 'Running'){Start-Sleep 0.1}; Stop-Job $timer
 ```
 
-运行结果[Q_RUN.png](Q_RUN.png)
+运行结果![Q_RUN.png](Q_RUN.png)
 
 
 
