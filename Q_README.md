@@ -1,4 +1,11 @@
 # Note by cndaqiang
+
+## 致谢
+
+感谢 [Claude](https://claude.ai) (Anthropic) 在本项目环境配置和依赖管理中提供的技术支持。
+
+特别感谢 [AnyRouter](https://anyrouter.top/register?aff=TFIa) 提供的免费 Claude API 服务，让我们能够顺利完成开发工作。
+
 ## 配置环境
 ### 需要安装cuda和cudnn
 ```
@@ -86,69 +93,16 @@ python -c "import cv2; import numpy as np; print('NumPy:', np.__version__); prin
   - **推荐：** 安装 CUDA Toolkit 12.x 和 cuDNN 9.x（详见下方"安装 CUDA 12"章节）
   - 替代方案：使用 CPU 版本（开发调试可用，但推理较慢）
 
-### 安装 CUDA 12 和 cuDNN 9（推荐用于实时推理）
-
-**为什么需要：** 本项目是实时游戏 AI，ONNX 模型每帧都会调用，GPU 加速可提升 5-10 倍推理速度。
-
-**安装步骤：**
-
-1. **下载 CUDA Toolkit 12.x**
-   - 访问：https://developer.nvidia.com/cuda-downloads
-   - 选择：Windows > x86_64 > 版本选择 12.x（如 12.6）
-   - 下载并安装（约 3 GB，安装后约 6 GB）
-   - 选择"精简"安装即可
-
-2. **下载 cuDNN 9.x**
-   - 访问：https://developer.nvidia.com/cudnn
-   - 需要注册 NVIDIA 开发者账号（免费）
-   - 下载 cuDNN 9.x for CUDA 12.x
-   - 解压后，将文件复制到 CUDA 安装目录：
-     ```
-     cudnn/bin/* -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.x\bin\
-     cudnn/include/* -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.x\include\
-     cudnn/lib/* -> C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.x\lib\
-     ```
-
-3. **验证安装**
-   ```bash
-   nvcc --version  # 应显示 CUDA 12.x
-   python -c "import onnxruntime as ort; print(ort.get_available_providers())"  # 应包含 CUDAExecutionProvider
-   ```
-
-4. **重启终端**，然后运行 train.py，CUDA 警告应消失
-
-
-
-
-### WinPython预装很多库导致卸载太费事放弃
-* 应该也是onnxruntime-gpu和pytorch冲突,后续可以尝试
-```
-Winpython64-3.10.9.0.exe
-https://github.com/winpython/winpython/releases/tag/5.3.20221233
-```
-
-环境变量
-```
-$baseDir = 'D:\GreenSoft\WPy64-31090\python-3.10.9.amd64'
-$env:PATH = "$baseDir;$baseDir\Scripts;" + $env:PATH
-```
-
-requirements
-```
-# 清理winpy的环境
-python -m pip uninstall numpy scipy  numba  bqplot -y
-pip uninstall -y xgboost umap-learn tbats statsmodels shap scikit-learn scikit-image fastai cvxpy dask-ml -y
-```
 
 
 ## 配置模拟器
 按照 doc/模拟器配置说明.md 进行配置
-* 开启root权限
-* adb, 2400*1080
+* 开启root权限(真的需要吗?todo)
+* adb, 2400*1080(真的需要吗?是按键位置需要,还是训练的模型需要?todo)
 
 
 
-连接模拟器之后，就可以双击打开scrcpy了,获得窗口标题如`SM-S9210`
+连接模拟器之后，就可以双击打开scrcpy了,获得窗口标题如`SM-S9210`(目前好像是基于窗口识别的,基于adb的识别速度应该会慢,没有基于adb适配的计划?notdo)
 ```
 PS D:\SoftData\git\wzry_ai\scrcpy-win64-v2.0> .\adb.exe connect 127.0.0.1:5555
 connected to 127.0.0.1:5555
@@ -181,10 +135,14 @@ conda activate "$env:USERPROFILE\miniconda3"
 conda activate wzry_ai
 python train.py
 
-
-
 # 暂停，方便查看结果
 $timer=Start-Job {Start-Sleep 20}; Write-Host "Press any key to continue..."; while(-not [console]::KeyAvailable -and (Get-Job -Id $timer.Id).State -eq 'Running'){Start-Sleep 0.1}; Stop-Job $timer
 ```
 
 运行结果[Q_RUN.png](Q_RUN.png)
+
+
+
+## todo
+* 或许后续可以采用[autowzry](https://github.com/cndaqiang/autowzry)进行王者操控, 再进入对战页面后, 采用该项目进行对战.
+* 目前该项目的模型还有进步空间.

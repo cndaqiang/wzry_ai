@@ -1,5 +1,8 @@
 src/*onnx
+src/*pt
+models/*onnx
 # cndaqiang /\
 .idea
 __pycache__
 status
+.claude
