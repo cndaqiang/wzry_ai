@@ -1,0 +1,76 @@
+odel loaded from src/wzry_ai.pt
+-------------------------------对局开始-----------------------------------
+---> 获取预测动作
+---> env.step(action)
+升级1技能
+2技能
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+请求集合
+攻击
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+攻击塔
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+恢复
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+2技能
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+2技能
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+升级3技能
+装备技能
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+购买装备1
+攻击塔
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+升级3技能
+攻击小兵
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+发起进攻
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)
+移动
+升级2技能
+召唤师技能
+---> reward
+None -1
+---> 获取预测动作
+---> env.step(action)

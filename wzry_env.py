@@ -51,16 +51,28 @@ class Environment():
     def step(self, action):
         move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
         self.android_controller.action_move({"action": move_action, "angle": angle})
+        from time import sleep
+        if move_action != 0:
+            # print("---> sleep 1s for move action")
+            sleep(1)     
         self.android_controller.action_info({"action": info_action})
         self.android_controller.action_attack(
             {"action": attack_action, "action_type": action_type, "arg1": arg1, "arg2": arg2, "arg3": arg3})
 
+        # 持续进行截屏
         next_state = self.android_controller.screenshot_window()
         while next_state is None or next_state.size == 0:
             time.sleep(0.01)
             next_state = self.android_controller.screenshot_window()
             continue
 
+        # 核心,计算奖赏?
+        # rewordUtil 就是 getReword.py 里面的 RewordUtil 类
+        # 也是设计到ppocronnx以及模型的部分
+        # 是直接图片输入,True -> False, action 列表
+        # 只根据下一张截图 next_state, 就能给出
+        # # 根据截图判断是否死亡以及游戏结束,并行判断(todo,这点或许可以借鉴到autowzry中快速判断当前游戏界面)
+        # # 以及根据状态判断权重calculate_reword, 根据胜利失败死亡进行赋值
         reward, done, info = self.rewordUtil.get_reword(next_state, True, (
             move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3))
 

@@ -23,7 +23,8 @@ class AndroidTool:
         self.device_serial = args.iphone_id
         self.actual_height, self.actual_width = self.get_device_resolution()
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
-        self._show_action_log = False
+        #self._show_action_log = False
+        self._show_action_log = True #cndaqang debug
 
     def show_action_log(self):
         self._show_action_log = True
@@ -52,9 +53,10 @@ class AndroidTool:
             end_x, end_y = self.calculate_endpoint((start_x, start_y),
                                                    actions_detail['radius'],
                                                    task_params['angle'])
-
+            #cndaqiang move: 500 -> duration
+            duration = str(actions_detail.get('duration', 500))
             subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
-                            "input", "swipe", str(start_x), str(start_y), str(end_x), str(end_y), "500"])
+                            "input", "swipe", str(start_x), str(start_y), str(end_x), str(end_y), duration])
 
     def execute_info(self, task_params):
         # 信息操作逻辑
@@ -64,6 +66,7 @@ class AndroidTool:
             if self._show_action_log:
                 print(actions_detail['action_name'])
             start_x, start_y = self.calculate_startpoint(actions_detail['position'])
+            # tap 短点击
             subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
                             "input", "tap", str(start_x), str(start_y)])
 
@@ -76,6 +79,7 @@ class AndroidTool:
         arg3 = task_params['arg3'] + 1
 
         if action_index != 0:
+            # action_index 攻击的对象,普攻、小兵、回血、技能
             actions_detail = attack_actions_detail[action_index]
             if self._show_action_log:
                 print(actions_detail['action_name'])
@@ -85,8 +89,11 @@ class AndroidTool:
                                 "input", "tap", str(start_x), str(start_y)])
             else:
                 if action_type == 0:
-                    subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
-                                    "input", "tap", str(start_x), str(start_y)])
+                    # cndaqiang, tap应该点击多次
+                    for i in range(3):
+                        subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
+                                        "input", "tap", str(start_x), str(start_y)])
+                    #
                 elif action_type == 1:
                     end_x, end_y = self.calculate_endpoint((start_x, start_y),
                                                            arg2,
@@ -105,6 +112,7 @@ class AndroidTool:
         return start_x, start_y
 
     def calculate_endpoint(self, center, radius, angle):
+        #0 右, 90下, 270 上
         angle_rad = math.radians(angle)
         x = int(center[0] + radius * math.cos(angle_rad))
         y = int(center[1] + radius * math.sin(angle_rad))

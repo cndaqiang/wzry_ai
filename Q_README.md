@@ -143,6 +143,24 @@ $timer=Start-Job {Start-Sleep 20}; Write-Host "Press any key to continue..."; wh
 
 
 
+## 报错
+删除src目录的模型文件,可能是损坏了
+```
+(wzry_ai) PS D:\SoftData\git\wzry_ai> .\run.ps1
+already connected to 127.0.0.1:5555
+850
+Traceback (most recent call last):
+  File "D:\SoftData\git\wzry_ai\train.py", line 27, in <module>
+    agent = DQNAgent()
+  File "D:\SoftData\git\wzry_ai\dqnAgent.py", line 34, in __init__
+    self.policy_net.load_state_dict(torch.load(args.model_path))
+  File "C:\Users\cndaqiang\miniconda3\envs\wzry_ai\lib\site-packages\torch\serialization.py", line 1486, in load
+    with _open_zipfile_reader(opened_file) as opened_zipfile:
+  File "C:\Users\cndaqiang\miniconda3\envs\wzry_ai\lib\site-packages\torch\serialization.py", line 771, in __init__
+    super().__init__(torch._C.PyTorchFileReader(name_or_buffer))
+RuntimeError: PytorchStreamReader failed reading zip archive: failed finding central directory
+```
+
 ## todo
 * 或许后续可以采用[autowzry](https://github.com/cndaqiang/autowzry)进行王者操控, 再进入对战页面后, 采用该项目进行对战.
 * 目前该项目的模型还有进步空间.

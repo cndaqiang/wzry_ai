@@ -95,7 +95,16 @@ class GetRewordUtil:
         rewordResult = 0
 
         if status_name is None:
-            rewordResult = -1
+            # cndaqiang, 增加移动权重
+            move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
+            if move_action !=0 :
+                rewordResult = 1
+                # 0-90, 270~360, 是向前进, 给更多的权重
+                if abs(angle - 180) >= 90:
+                    rewordResult = 2
+            else:
+                rewordResult = -1
+            #
         elif status_name == "attack":
             move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
 
@@ -126,6 +135,8 @@ class GetRewordUtil:
             rewordResult = -10000
         elif status_name == "death":
             rewordResult = -1
+        
+        print(f"-->状态:{status_name}, attack_reword:{attack_reword}")
 
         return rewordResult
 

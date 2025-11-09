@@ -47,9 +47,17 @@ def data_collector():
             # 对局开始了，进行训练
             while globalInfo.is_start_game():
                 # 获取预测动作
+                print("---> 获取预测动作")
                 action = agent.select_action(state)
-
+                print(f"---> env.step(action)={action}")
+                # move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
+                # 移动(只有一个和移动的角度), 发信号(信号,装备,升级技能), 攻击(小兵,英雄,塔,回血,回城,技能,召唤师技能) 
+                #下面就是执行action列表，并读取state(同上)为next_state=screenshot_window()
+                # action = [0不动1动, 0-359移动角度, 0-8信息操作, 0-10攻击对象(普攻、小兵、回血、技能、不攻击), 0-2动作类型(点击、滑动、长按), 0-359参数1(滑动角度), 0-99参数2(滑动距离), 0-4参数3(长按时间)]
                 next_state, reward, done, info = env.step(action)
+                print("---> reward")
+                # # 以及根据新截图判断权重calculate_reword, 根据胜利失败死亡进行赋值
+                #目前返回的 info=None, reward=-1
                 print(info, reward)
 
                 # 对局结束

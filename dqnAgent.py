@@ -40,8 +40,15 @@ class DQNAgent:
         print(f"Model saved to {path}")
 
     def select_action(self, state):
-        if np.random.rand() <= self.epsilon:
+        #cndaqiang debug
+        # 默认情况下,  epsilon == 1, 所以总是随机选择动作
+        rand = np.random.rand()
+        print(f"-->Random number for epsilon-greedy: {rand}, Epsilon: {self.epsilon}, logical: {rand <= self.epsilon}")
+        #if np.random.rand() <= self.epsilon:
+        if rand <= self.epsilon:
             return [np.random.randint(size) for size in self.action_sizes]
+        # 一组随机整数 self.action_sizes = [2, 360, 9, 11, 3, 360, 100, 5]
+        # [0不动1动, 0-359移动角度, 0-8信息操作, 0-10攻击对象(普攻、小兵、回血、技能、不攻击), 0-2动作类型(点击、滑动、长按), 0-359参数1(滑动角度), 0-99参数2(滑动距离), 0-4参数3(长按时间)]
         tmp_state_640_640 = self.preprocess_image(state).unsqueeze(0)
         self.policy_net.eval()
         with torch.no_grad():
