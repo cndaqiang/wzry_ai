@@ -1,7 +1,8 @@
 ## README
 * 我的初次配置过程: [Q_README.md](Q_README.md)
+* 最新的运行环境配置: [Q_INSTALL.md](Q_INSTALL.md),基于便携版Python3.10
 * 原项目[README_myBoris.md](README_myBoris.md)
-* 二次开发进度[Q_Plan.md](Q_Plan.md)
+* 二次开发进度[Q_Plan.md](Q_PLAN.md)
 
 
 ## 代码解读与开发规划

@@ -5,6 +5,6 @@
 5. 改用airtest进行touch,采用autowzry进行控制
 6. [done][支持960x540直接从MuMu模拟器的窗口读取,相对坐标计算的位置]调整分辨率
 7. 打包成库,在autowzry中调用此库/训练此库
-
+8. [Done]采用便携版Python3.10重新配置环境,并编写一键安装脚本[Q_INSTALL.md](Q_INSTALL.md)
 
 

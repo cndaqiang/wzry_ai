@@ -12,10 +12,10 @@ move_actions_detail = {
 }
 # 点击坐标
 #  购买装备1， 购买装备2，发起进攻，开始撤退，请求集合，升级1技能，升级2技能，升级3技能，升级4技能
-# 左侧的购买装备回合移动位置有冲突(轮盘跟随手指)
+# 左侧的购买装备回合移动位置有冲突(轮盘跟随手指),暂时改为(0.0,0.0)
 info_actions_detail = {
-    1: {'action_name': '购买装备1', 'position': (0.050, 0.390), 'radius': 0}, #左侧购买
-    2: {'action_name': '购买装备2', 'position': (0.133, 0.51), 'radius': 0},
+    1: {'action_name': '购买装备1', 'position': (0.0, 0.0), 'radius': 0}, #左侧购买(0.050, 0.390)
+    2: {'action_name': '购买装备2', 'position': (0.0,0.0), 'radius': 0},
     3: {'action_name': '发起进攻', 'position': (0.970, 0.155), 'radius': 0},
     4: {'action_name': '开始撤退', 'position': (0.970, 0.230), 'radius': 0},
     5: {'action_name': '请求集合', 'position': (0.970, 0.300), 'radius': 0},
