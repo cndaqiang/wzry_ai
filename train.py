@@ -19,7 +19,8 @@ class_names = ['started']
 start_check = OnnxRunner('models/start.onnx', classes=class_names)
 
 rewordUtil = GetRewordUtil()
-tool = AndroidTool()
+tool = AndroidTool(airtest_config="config.example.yaml")
+state = tool.screenshot_window()
 tool.show_scrcpy()
 # tool.show_action_log()
 env = Environment(tool, rewordUtil)

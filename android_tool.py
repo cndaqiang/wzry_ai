@@ -8,6 +8,10 @@ import time
 from queue import Queue, Empty
 import concurrent.futures
 
+from airtest_mobileauto.control import touch
+from airtest_mobileauto.control import deviceOB, Settings
+import os
+
 import cv2
 import numpy as np
 import win32gui
@@ -18,7 +22,13 @@ from argparses import move_actions_detail, info_actions_detail, attack_actions_d
 
 
 class AndroidTool:
-    def __init__(self, scrcpy_dir="scrcpy-win64-v2.0"):
+    def __init__(self, scrcpy_dir="scrcpy-win64-v2.0",airtest_config=""):
+        self.airtest_config = airtest_config
+        self.airtest = False
+        if len(self.airtest_config) > 0:
+            print(f"---> AndroidTool: airtest_config={airtest_config}")
+            print(f"---> cndaqiang: 将基于airtest执行")
+            self.airtest_init()
         self.scrcpy_dir = scrcpy_dir
         self.device_serial = args.iphone_id
         self.actual_height, self.actual_width = self.get_device_resolution()
@@ -26,6 +36,25 @@ class AndroidTool:
         #self._show_action_log = False
         self._show_action_log = True #cndaqang debug
 
+    def airtest_init(self):
+        Settings.Config(self.airtest_config)
+        # copy from autowzry
+        # 静态资源
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        assets_dir = os.path.join(current_dir, 'assets')
+        Settings.figdirs.append(assets_dir)
+        seen = set()
+        Settings.figdirs = [x for x in Settings.figdirs if not (x in seen or seen.add(x))]
+        #
+        # device
+        self.mynode = Settings.mynode
+        self.totalnode = Settings.totalnode
+        self.totalnode_bak = self.totalnode
+        self.LINK = Settings.LINK_dict[Settings.mynode]
+        self.移动端 = deviceOB(mynode=self.mynode, totalnode=self.totalnode, LINK=self.LINK)
+        self.移动端.连接设备()
+        self.airtest = True
+        
     def show_action_log(self):
         self._show_action_log = True
 
@@ -33,6 +62,9 @@ class AndroidTool:
         self._show_action_log = False
 
     def get_device_resolution(self):
+        if self.airtest:
+            return max(self.移动端.resolution), min(self.移动端.resolution)
+        #
         # 获取设备的实际分辨率
         output = subprocess.check_output(
             [f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell", "wm", "size"]
@@ -119,6 +151,8 @@ class AndroidTool:
         return x, y
 
     def show_scrcpy(self):
+        if self.airtest:
+            return
         if args.real_iphone:
             subprocess.Popen(
                 [f"{self.scrcpy_dir}/scrcpy.exe", "-s", self.device_serial, "-m", "1080", "--window-title",
@@ -177,6 +211,23 @@ class AndroidTool:
 
         return None
 
+    def screenshot_airtest(self):
+        """
+        使用 Airtest 截取屏幕并返回图像数据。
+
+        返回:
+        np.ndarray: 截图的图像数据。
+        """
+        try:
+            arr = self.移动端.device.snapshot()
+            print("---> screenshot_airtest: 截图成功")
+            # cndaqiang debug
+            # cv2.imwrite("screenshot_airtest.png", arr)
+            #
+            return arr
+        except Exception as e:
+            print(e)
+            return None
     def screenshot_window(self):
         """
         截取指定窗口的内容并返回图像数据。
@@ -187,6 +238,9 @@ class AndroidTool:
         返回:
         np.ndarray: 截图的图像数据，如果窗口未找到则返回 None。
         """
+        if self.airtest:
+            return self.screenshot_airtest()
+        #
         try:
             # 获取窗口句柄
             handle = win32gui.FindWindow(None, args.window_title)
@@ -208,6 +262,10 @@ class AndroidTool:
             ptr.setsize(height * width * 4)
             arr = np.array(ptr).reshape(height, width, 4)
             arr = cv2.cvtColor(arr, cv2.COLOR_BGRA2BGR)
+            # cndaqiang debug
+            # cv2.imwrite("screenshot.png", arr)
+            #
+            # 而替换图片,则直接 arr = cv2.imread("my_image.png")  # 替换成你的图片路径
 
             return arr
         except Exception as e:

@@ -1,0 +1,12 @@
+LINK_dict:
+  0: Android:///127.0.0.1:5555
+MuINFO1: 本配置文件中的MuMu开头变量为MuMu模拟器专用变量,
+MuINFO2: '如果你不会配置或者使用其他模拟器, 请删除这些变量, 不会影响代码运行. '
+MuINFO3: 希望控制模拟器的启动关闭, 请参考手册教程配置
+MuMu_Instance:
+  0: '0'
+MuMudir: D:\Program Files\Netease\MuMu\nx_main
+logfile:
+  0: result.0.txt
+mynode: 0
+prefix: autowzry

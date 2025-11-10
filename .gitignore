@@ -1,3 +1,4 @@
+result.*.txt
 src/*onnx
 src/*pt
 models/*onnx
