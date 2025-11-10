@@ -98,8 +98,8 @@ class GetRewordUtil:
             # cndaqiang, 增加移动权重
             move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
             if move_action !=0 :
-                rewordResult = 1
-                # 0-90, 270~360, 是向前进, 给更多的权重
+                rewordResult = 0
+                # 0-90, 270~360, 是向前进, 给更多的权重, 别的方向不给权重
                 if abs(angle - 180) >= 90:
                     rewordResult = 2
             else:

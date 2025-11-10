@@ -85,7 +85,7 @@ def get_args():
     parser.add_argument('--gamma', type=float, default=0.99, help="Discount factor")
     #epsilon = 1.0适合从头开始训练,所有运动都是随机的; 如果加载了预训练模型, 则可以将其设置为较低的值, 例如0.1
     #parser.add_argument('--epsilon', type=float, default=1.0, help="Initial exploration rate")
-    parser.add_argument('--epsilon', type=float, default=0.5, help="Initial exploration rate")
+    parser.add_argument('--epsilon', type=float, default=1.5, help="Initial exploration rate")
     parser.add_argument('--epsilon_decay', type=float, default=0.995, help="Exploration rate decay")
     parser.add_argument('--epsilon_min', type=float, default=0.01, help="Minimum exploration rate")
     parser.add_argument('--model_path', type=str, default="src/wzry_ai.pt", help="Path to the model to load")

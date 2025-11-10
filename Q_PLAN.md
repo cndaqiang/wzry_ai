@@ -1,7 +1,7 @@
 1. [Done]在控制角色移动函数部分增加输出,矫正按键位置,测试adb位置
 2. [Done][前方移动权重增加]增加移动权重, 让角色更倾向于上线,删除其他移动权重
 3. [done][需要训练,提供的模型是图像识别,不是对抗模型]确定这个模型真的有让角色移动和对战的能力吗？是否需要训练新的模型.
-4. 改用airtest提供接口,而非windows窗口截图
+4. [done]改用airtest提供接口,而非windows窗口截图
 5. 改用airtest进行touch,采用autowzry进行控制
 6. [done][支持960x540直接从MuMu模拟器的窗口读取,相对坐标计算的位置]调整分辨率
 7. 打包成库,在autowzry中调用此库/训练此库
@@ -9,9 +9,10 @@
 
 
 ## Airtest适配计划
-* 接入[autowzry](https://github.com/cndaqiang/autowzry), 判断对战状态, 替换掉onnx模型
+* [done]接入[autowzry](https://github.com/cndaqiang/autowzry), 判断对战状态, 替换掉onnx模型
 * [done]使用[airtest_mobileauto](https://github.com/cndaqiang/airtest_mobileauto)进行截图操作,替换掉windows窗口截图
-* 使用[airtest_mobileauto](https://github.com/cndaqiang/airtest_mobileauto)进行touch操作,替换掉adb命令操作
+* 在[autowzry](https://github.com/cndaqiang/autowzry)中开发死亡检查，以及基于opencv的胜利和失败判断,彻底替换掉onnx
+* [done,只有android_tool.py中涉及,已替换]使用[airtest_mobileauto](https://github.com/cndaqiang/airtest_mobileauto)进行touch操作,替换掉adb命令操作
 * 要先升级opencv和numpy吗？
 
 

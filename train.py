@@ -8,7 +8,7 @@ from argparses import args
 from dqnAgent import DQNAgent
 from getReword import GetRewordUtil
 from globalInfo import GlobalInfo
-
+from airtest_mobileauto.control import connect_status
 from wzry_env import Environment
 from onnxRunner import OnnxRunner
 
@@ -19,7 +19,9 @@ class_names = ['started']
 start_check = OnnxRunner('models/start.onnx', classes=class_names)
 
 rewordUtil = GetRewordUtil()
-tool = AndroidTool(airtest_config="config.example.yaml")
+airtest_config="config.example.yaml"
+#airtest_config=""
+tool = AndroidTool(airtest_config=airtest_config)
 state = tool.screenshot_window()
 tool.show_scrcpy()
 # tool.show_action_log()
@@ -41,7 +43,8 @@ def data_collector():
         # 判断对局是否开始
         checkGameStart = start_check.get_max_label(state)
 
-        if checkGameStart == 'started':
+        #if checkGameStart == 'started':
+        if tool.autowzry.判断对战中():
             print("-------------------------------对局开始-----------------------------------")
             globalInfo.set_game_start()
 
@@ -60,7 +63,8 @@ def data_collector():
                 # # 以及根据新截图判断权重calculate_reword, 根据胜利失败死亡进行赋值
                 #目前返回的 info=None, reward=-1
                 print(info, reward)
-
+                if not connect_status():
+                    tool.移动端.连接设备()
                 # 对局结束
                 if done == 1:
                     print("-------------------------------对局结束-----------------------------------")

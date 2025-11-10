@@ -1,3 +1,4 @@
+android.*.yaml
 result.*.txt
 src/*onnx
 src/*pt

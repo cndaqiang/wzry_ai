@@ -10,6 +10,7 @@ import concurrent.futures
 
 from airtest_mobileauto.control import touch
 from airtest_mobileauto.control import deviceOB, Settings
+from autowzry.wzry import wzry_task 
 import os
 
 import cv2
@@ -35,26 +36,16 @@ class AndroidTool:
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=3)
         #self._show_action_log = False
         self._show_action_log = True #cndaqang debug
+        self.onlymove = False # 同时执行多个指令可能会冲突,虽然也可以执行....<在一个非套接字上尝试了一个操>
 
     def airtest_init(self):
         Settings.Config(self.airtest_config)
-        # copy from autowzry
-        # 静态资源
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        assets_dir = os.path.join(current_dir, 'assets')
-        Settings.figdirs.append(assets_dir)
-        seen = set()
-        Settings.figdirs = [x for x in Settings.figdirs if not (x in seen or seen.add(x))]
-        #
-        # device
-        self.mynode = Settings.mynode
-        self.totalnode = Settings.totalnode
-        self.totalnode_bak = self.totalnode
-        self.LINK = Settings.LINK_dict[Settings.mynode]
-        self.移动端 = deviceOB(mynode=self.mynode, totalnode=self.totalnode, LINK=self.LINK)
-        self.移动端.连接设备()
+        self.autowzry = wzry_task()
+        self.移动端 = self.autowzry.移动端
         self.airtest = True
         
+    def airtest_star(self):
+        return self.autowzry.判断对战中()
     def show_action_log(self):
         self._show_action_log = True
 
@@ -63,7 +54,8 @@ class AndroidTool:
 
     def get_device_resolution(self):
         if self.airtest:
-            return max(self.移动端.resolution), min(self.移动端.resolution)
+            # wzry_ai 的adb本身移动的分辨率设计与airtest的图库不同,这里是min,max
+            return min(self.移动端.resolution), max(self.移动端.resolution)
         #
         # 获取设备的实际分辨率
         output = subprocess.check_output(
@@ -80,29 +72,45 @@ class AndroidTool:
             actions_detail = move_actions_detail[action_index]
             if self._show_action_log:
                 print(actions_detail['action_name'])
+            #cndaqiang move: 500 -> duration
+            print("actions_detail",actions_detail)
+            duration = actions_detail.get('duration', 500)
+            if self.airtest:
+                angle = task_params['angle']
+                duration = duration/1000.0
+                # 注意如果 对战中_移动 中有错误, 这里只会跳过, 不会输出报错
+                self.autowzry.对战中_移动(angle, duration)
+                return
             start_x, start_y = self.calculate_startpoint(actions_detail['position'])
 
             end_x, end_y = self.calculate_endpoint((start_x, start_y),
                                                    actions_detail['radius'],
                                                    task_params['angle'])
-            #cndaqiang move: 500 -> duration
-            duration = str(actions_detail.get('duration', 500))
+
             subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
-                            "input", "swipe", str(start_x), str(start_y), str(end_x), str(end_y), duration])
+                            "input", "swipe", str(start_x), str(start_y), str(end_x), str(end_y), str(duration)])
 
     def execute_info(self, task_params):
+        if self.onlymove: return # cndaqiang.不做这些
         # 信息操作逻辑
         action_index = task_params['action']
         if not action_index == 0:
             actions_detail = info_actions_detail[action_index]
             if self._show_action_log:
                 print(actions_detail['action_name'])
+            #
+            if self.airtest:
+                # 注意如果 对战中_移动 中有错误, 这里只会跳过, 不会输出报错
+                self.autowzry.对战中_信号(action_index)
+                return
+            #
             start_x, start_y = self.calculate_startpoint(actions_detail['position'])
             # tap 短点击
             subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
                             "input", "tap", str(start_x), str(start_y)])
 
     def execute_attack(self, task_params):
+        if self.onlymove: return # cndaqiang.不做这些
         # 攻击操作逻辑
         action_index = task_params['action']
         action_type = task_params['action_type']
@@ -115,6 +123,12 @@ class AndroidTool:
             actions_detail = attack_actions_detail[action_index]
             if self._show_action_log:
                 print(actions_detail['action_name'])
+            #
+            if self.airtest:
+                # 注意如果 对战中_移动 中有错误, 这里只会跳过, 不会输出报错
+                self.autowzry.对战中_攻击(action_index)
+                return
+            #
             start_x, start_y = self.calculate_startpoint(actions_detail['position'])
             if action_index < 7:
                 subprocess.run([f"{self.scrcpy_dir}/adb", "-s", self.device_serial, "shell",
@@ -146,6 +160,9 @@ class AndroidTool:
     def calculate_endpoint(self, center, radius, angle):
         #0 右, 90下, 270 上
         angle_rad = math.radians(angle)
+        # 但是为了让轮盘的方向与屏幕一致
+        # 图片上定义的cos(45),sin(45)=[+,+],是[下,右],若希望变成[上,右],则要反向-angle_rad
+        angle_rad = angle_rad*-1
         x = int(center[0] + radius * math.cos(angle_rad))
         y = int(center[1] + radius * math.sin(angle_rad))
         return x, y
