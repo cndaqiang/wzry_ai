@@ -95,15 +95,7 @@ class GetRewordUtil:
         rewordResult = 0
 
         if status_name is None:
-            # cndaqiang, 增加移动权重
-            move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
-            if move_action !=0 :
-                rewordResult = 0
-                # 0-90, 270~360, 是向前进, 给更多的权重, 别的方向不给权重
-                if abs(angle - 180) >= 90:
-                    rewordResult = 2
-            else:
-                rewordResult = -1
+            rewordResult = -1
             #
         elif status_name == "attack":
             move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
@@ -135,7 +127,15 @@ class GetRewordUtil:
             rewordResult = -10000
         elif status_name == "death":
             rewordResult = -1
-        
+
+        # cndaqiang, 增加移动权重
+        move_action, angle, info_action, attack_action, action_type, arg1, arg2, arg3 = action
+        if status_name != "death" and move_action !=0 :
+            # 0-90, 270~360, 是向前进, 给更多的权重, 别的方向不给权重
+            if abs(angle) <= 90 or abs(angle) >= 270:
+                rewordResult = rewordResult + 2
+        #
+
         print(f"-->状态:{status_name}, attack_reword:{attack_reword}")
 
         return rewordResult
@@ -189,11 +189,14 @@ class GetRewordUtil:
             # 等待所有任务完成
             for future in as_completed([future_class_name, future_check_death, future_md_class_name]):
                 end_time = time.time()
+                # 检查失败或胜利, `successes`,`failed`
                 if future == future_class_name:
                     done, class_name = future.result()
                     # print(f"tp运行时间: {end_time - start_time_class_name:.3f} 秒")
+                # onnx检查死亡
                 elif future == future_check_death:
                     death_class_name = future.result()
+                # 是否处在攻击状态和得分
                 elif future == future_md_class_name:
                     is_attack, attack_rewordCount = future.result()
                     if is_attack:
@@ -202,12 +205,16 @@ class GetRewordUtil:
 
             # 如果没结束，判断局内状态
             if done == 0:
+                # classname, 最高优先级是死亡, 其次是攻击, 剩下为胜利失败
+                # 
+                #  future_class_name 的结果包含
                 if death_class_name is not None:
                     class_name = death_class_name
                 elif md_class_name is not None:
                     class_name = md_class_name
 
         # 计算回报
+        # 虽然这个计算得分有在考虑回城等状态, 但是上面传入的参数只有 死亡,攻击,胜利失败,None
         rewordCount = self.calculate_reword(class_name, attack_rewordCount, action)
 
         return rewordCount, done, class_name

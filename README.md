@@ -1,4 +1,17 @@
 ## README
+本仓库的学习和开发调试正式结束.
+
+让code cli总结了下学习经验
+
+* [claude code](./learnnote_cc_kimi/index.md) 最丰富讲的很基础
+* [gemini](./learnnote_gemini/index.md) 简洁易懂, 结合代码
+* [codex](./learnnote_codex/index.md) 答辩
+
+再去看看其他相关项目,准备新项目的开发.
+
+
+---
+
 * 我的初次配置过程: [Q_README.md](Q_README.md)
 * 最新的运行环境配置: [Q_INSTALL.md](Q_INSTALL.md),基于便携版Python3.10. 虽然可以跑,但是就是没有conda版本跑的流畅,继续采用[Q_README.md](Q_README.md)中的配置方式更好.
 * 原项目[README_myBoris.md](README_myBoris.md)

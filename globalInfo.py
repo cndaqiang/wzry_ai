@@ -7,6 +7,8 @@ from filelock import FileLock
 
 from memory import ReplayMemory
 
+#cnq: 
+# @singleton 保证 GlobalInfo 全进程只有一份实例，多次 new 都返回同一对象，全局共享同一块内存与配置
 
 def singleton(cls):
     instances = {}
@@ -90,6 +92,16 @@ class GlobalInfo:
         return transitions
 
     # -------------------------------dqn经验池-------------------------------------
+    # 目前, 在 dqnAgent.py中会调用随机经验池 random_batch_size_memory_dqn
+    # 在train.py中. 每控制一次英雄操作, 就存储一次经验
+    #ReplayMemory 就是一个循环缓存区变量，帮你把数据按顺序存进来，
+    # 满了自动从头覆盖，随时随机抽几条旧数据出来再用，省得程序自己管内存、管指针。
+    # 就是临时存储训练数据只用
+    # 就是一条自动滚动的“大变量”——来了新数据就往后追加，地方满了就回头覆盖，
+    # 咱们只管往里放、往外拿，根本不用操心内存和指针。
+    # 在train.py中会判断,是否存满了is_memory_bigger_batch_size_dqn
+
+
     def store_transition_dqn(self, *args):
         self.dqn_memory.push(*args)
 

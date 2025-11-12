@@ -10,6 +10,8 @@ class NetDQN(nn.Module):
         self.conv1 = nn.Conv2d(3, 64, kernel_size=8, stride=4)
         self.conv2 = nn.Conv2d(64, 128, kernel_size=4, stride=2)
 
+        # ，线性层 fc 的输入维度必须提前算好，
+        # 而计算依据就是“卷积部分在 640×640 图像上拉平后有多少个元素”
         conv_output_size = self._get_conv_output_size(640, 640)
         self.fc = nn.Linear(conv_output_size, 256)
 
@@ -39,14 +41,25 @@ class NetDQN(nn.Module):
                     nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
-        x = x.to(next(self.parameters()).device)
+        # 卷积 - 卷积 - 线性到256, relu激活
+        # self.parameters 模型张量
+        # next(self.parameters) 模型张量的第一个数据
+        # 就是为了把x推送到模型所在的device
+        x = x.to( next( self.parameters() ).device )
+        # conv1(输入的x可以是任意分辨率)
+        # conv1的参数空间, 由nn.Conv2d(3, 64, kernel_size=8, stride=4)决定
+        # 滑动后的结果由x决定, 当前参数下, x[...,m640]滑动后为[...,159]
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = x.view(x.size(0), -1)
+        # 前面的x输入可能是任意的,在进行线性变换之前,我们要确定卷积的结果才能变换
+        # 所以在init中,采用 conv_output_size = self._get_conv_output_size(640, 640)
+        # 计算两层卷积后的结果, 即self.fc = nn.Linear(conv_output_size, 256)
         x = self.fc(x)
 
         x = F.relu(self.fc1(x))
 
+        # 线性降到预测维度
         move_action_q = self.fc_move(x)
         angle_q = self.fc_angle(x)
         info_action_q = self.fc_info(x)
